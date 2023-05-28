@@ -1,2 +1,8 @@
-package me.tiredy.sleepy.callback;public class VoidCallback {
+package me.tiredy.sleepy.callback;
+
+@SuppressWarnings("unused")
+public interface VoidCallback {
+    void onSuccess();
+
+    void onFailure(Throwable throwable);
 }

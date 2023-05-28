@@ -1,6 +1,6 @@
-package me.tiredy.mini.chat;
+package me.tiredy.sleepy.chat;
 
-import me.tiredy.mini.MiniLib;
+import me.tiredy.sleepy.SleepyAPI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
@@ -8,26 +8,23 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("unused")
 public class ChatUtil {
-    private static final MiniLib instance = MiniLib.getInstance();
+    private final BukkitAudiences audiences;
+    public ChatUtil(SleepyAPI instance) {
+        this.audiences = instance.getAudiences();
+    }
 
-    public static Component component(String message) {
+    public Component component(String message) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(message).asComponent();
     }
 
-    public static void sendMessage(CommandSender sender, String message) {
-        Audience audience = instance.getAdventure().sender(sender);
+    public void sendMessage(CommandSender sender, String message) {
+        Audience audience = audiences.sender(sender);
         audience.sendMessage(component(message));
     }
-    public static void sendMessage(Player p, String message) {
-        Audience audience = instance.getAdventure().player(p);
+    public void sendMessage(Player p, String message) {
+        Audience audience = audiences.player(p);
         audience.sendMessage(component(message));
-    }
-
-    private record Placeholder(String name, String replacement) {
-        private Placeholder(String name, String replacement) {
-                this.name = "{" + name + "}";
-                this.replacement = replacement;
-        }
     }
 }

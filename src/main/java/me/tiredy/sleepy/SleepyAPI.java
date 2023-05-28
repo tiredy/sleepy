@@ -1,17 +1,23 @@
 package me.tiredy.sleepy;
 
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class SleepyAPI extends JavaPlugin {
+@SuppressWarnings("unused")
+public final class SleepyAPI {
+    private final JavaPlugin plugin;
+    private final BukkitAudiences audiences;
 
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
-
+    public SleepyAPI(JavaPlugin plugin) {
+        this.plugin = plugin;
+        this.audiences = BukkitAudiences.create(plugin);
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public JavaPlugin getPlugin() {
+        return plugin;
+    }
+
+    public BukkitAudiences getAudiences() {
+        return audiences;
     }
 }
