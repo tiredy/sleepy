@@ -1,5 +1,6 @@
-package me.tiredy.sleepy.blueprint.vec;
+package me.tiredy.sleepy.blueprint.vector;
 
+@SuppressWarnings("unused")
 public class BlockVec3 {
     public int getX() {
         return x;
