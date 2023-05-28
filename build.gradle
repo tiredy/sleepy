@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id "maven-publish"
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'com.github.tiredy'
@@ -24,10 +25,19 @@ dependencies {
     implementation "net.kyori:adventure-platform-bukkit:4.3.0"
 }
 
-
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier.set('sources')
+}
+
+shadowJar {
+    mergeServiceFiles()
+    configurations = [project.configurations.runtimeClasspath]
 }
 
 publishing {
@@ -38,7 +48,7 @@ publishing {
     }
     publications {
         mavenJava(MavenPublication) {
-            from components.java
+            from components.shadow
         }
     }
 }
