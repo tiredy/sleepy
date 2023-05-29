@@ -9,8 +9,8 @@ import org.bukkit.block.Block;
 import java.util.ArrayList;
 
 @SuppressWarnings("unused")
-public class AsyncBlueprint extends Blueprint {
-    protected AsyncBlueprint(ArrayList<BlueprintBlock> blocks, BlockVec3 origin) {
+public class CallbackBlueprint extends Blueprint {
+    protected CallbackBlueprint(ArrayList<BlueprintBlock> blocks, BlockVec3 origin) {
         super(blocks, origin);
     }
 
@@ -28,7 +28,7 @@ public class AsyncBlueprint extends Blueprint {
         callback.onSuccess();
     }
 
-    public static void from(World world, BlockVec3 min, BlockVec3 max, ResultCallback<AsyncBlueprint> callback) {
+    public static void from(World world, BlockVec3 min, BlockVec3 max, ResultCallback<CallbackBlueprint> callback) {
         ArrayList<BlueprintBlock> blocks = new ArrayList<>();
 
         for (int x = min.getX(); x <= max.getX(); x++) {
@@ -40,6 +40,6 @@ public class AsyncBlueprint extends Blueprint {
             }
         }
 
-        callback.onSuccess(new AsyncBlueprint(blocks,new BlockVec3(0,0,0)));
+        callback.onSuccess(new CallbackBlueprint(blocks,new BlockVec3(0,0,0)));
     }
 }

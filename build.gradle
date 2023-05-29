@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java'
     id "maven-publish"
 }
@@ -29,9 +30,14 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-task sourcesJar(type: Jar) {
+tasks.register('sourcesJar', Jar) {
     from sourceSets.main.allJava
     archiveClassifier.set('sources')
+}
+
+shadowJar {
+    mergeServiceFiles()
+    minimize()
 }
 
 publishing {
@@ -41,8 +47,8 @@ publishing {
         }
     }
     publications {
-        mavenJava(MavenPublication) {
-            from components.java
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
         }
     }
 }
