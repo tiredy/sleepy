@@ -1,7 +1,9 @@
 package me.tiredy.sleepy.blueprint;
 
+import me.tiredy.sleepy.SleepyAPI;
 import me.tiredy.sleepy.blueprint.region.CuboidRegion;
 import me.tiredy.sleepy.blueprint.vector.BlockVec3;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -30,21 +32,25 @@ public class Blueprint implements Serializable {
     protected List<BlueprintBlock> blocks;
     protected BlockVec3 origin;
 
-    protected Blueprint(ArrayList<BlueprintBlock> blocks, BlockVec3 origin) {
+    protected Blueprint(List<BlueprintBlock> blocks, BlockVec3 origin) {
         this.blocks = blocks;
         this.origin = origin;
     }
 
-    public void to(BlockVec3 location, World world) {
-        for (BlueprintBlock block : blocks) {
-            Block targetBlock = world.getBlockAt(
-                    location.getX() + block.getPos().getX(),
-                    location.getY() + block.getPos().getY(),
-                    location.getZ() + block.getPos().getZ()
-            );
-            targetBlock.setType(block.getMaterial(), false);
-            targetBlock.setBlockData(block.getData());
-        }
+    public void to(SleepyAPI instance, BlockVec3 location, World world) {
+        Bukkit.getScheduler().runTask(instance.getPlugin(), () -> {
+            System.out.println(blocks);
+            for (BlueprintBlock block : blocks) {
+                Block targetBlock = world.getBlockAt(
+                        location.getX() + block.getPos().getX(),
+                        location.getY() + block.getPos().getY(),
+                        location.getZ() + block.getPos().getZ()
+                );
+                System.out.println(targetBlock);
+                targetBlock.setType(block.getMaterial(), false);
+                targetBlock.setBlockData(block.getData(), false);
+            }
+        });
     }
 
     public static Blueprint from(CuboidRegion region) {
