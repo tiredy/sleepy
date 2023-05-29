@@ -1,3 +1,3 @@
+![](https://jitpack.io/v/tiredy/sleepy.svg)](https://jitpack.io/#tiredy/sleepy)
 # sleepy
-It's an api i made for some plugins. that's it.
-api? lib? repo? what..?
+For mah plugins
