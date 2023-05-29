@@ -37,20 +37,16 @@ public class Blueprint implements Serializable {
         this.origin = origin;
     }
 
-    public void to(SleepyAPI instance, BlockVec3 location, World world) {
-        Bukkit.getScheduler().runTask(instance.getPlugin(), () -> {
-            System.out.println(blocks);
-            for (BlueprintBlock block : blocks) {
-                Block targetBlock = world.getBlockAt(
-                        location.getX() + block.getPos().getX(),
-                        location.getY() + block.getPos().getY(),
-                        location.getZ() + block.getPos().getZ()
-                );
-                System.out.println(targetBlock);
-                targetBlock.setType(block.getMaterial(), false);
-                targetBlock.setBlockData(block.getData(), false);
-            }
-        });
+    public void to(BlockVec3 location, World world) {
+        for (BlueprintBlock block : blocks) {
+            Block targetBlock = world.getBlockAt(
+                    location.getX() + block.getPos().getX(),
+                    location.getY() + block.getPos().getY(),
+                    location.getZ() + block.getPos().getZ()
+            );
+            targetBlock.setType(block.getMaterial(), false);
+            targetBlock.setBlockData(block.getData(), false);
+        }
     }
 
     public static Blueprint from(CuboidRegion region) {
