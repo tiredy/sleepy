@@ -47,11 +47,12 @@ public class Blueprint implements Serializable {
         }
     }
 
-    public static Blueprint from(World world, CuboidRegion region) {
+    public static Blueprint from(CuboidRegion region) {
         ArrayList<BlueprintBlock> blocks = new ArrayList<>();
 
         BlockVec3 min = region.getMin();
         BlockVec3 max = region.getMax();
+        World world = region.getWorld();
 
         for (int x = min.getX(); x <= max.getX(); x++) {
             for (int y = min.getY(); y <= max.getY(); y++) {
