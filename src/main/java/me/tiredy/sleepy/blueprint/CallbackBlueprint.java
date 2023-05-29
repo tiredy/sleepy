@@ -1,5 +1,6 @@
 package me.tiredy.sleepy.blueprint;
 
+import me.tiredy.sleepy.blueprint.region.CuboidRegion;
 import me.tiredy.sleepy.blueprint.vector.BlockVec3;
 import me.tiredy.sleepy.callback.ResultCallback;
 import me.tiredy.sleepy.callback.VoidCallback;
@@ -28,8 +29,11 @@ public class CallbackBlueprint extends Blueprint {
         callback.onSuccess();
     }
 
-    public static void from(World world, BlockVec3 min, BlockVec3 max, ResultCallback<CallbackBlueprint> callback) {
+    public static void from(World world, CuboidRegion region, ResultCallback<CallbackBlueprint> callback) {
         ArrayList<BlueprintBlock> blocks = new ArrayList<>();
+
+        BlockVec3 min = region.getMin();
+        BlockVec3 max = region.getMax();
 
         for (int x = min.getX(); x <= max.getX(); x++) {
             for (int y = min.getY(); y <= max.getY(); y++) {

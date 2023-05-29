@@ -1,5 +1,6 @@
 package me.tiredy.sleepy.blueprint;
 
+import me.tiredy.sleepy.blueprint.region.CuboidRegion;
 import me.tiredy.sleepy.blueprint.vector.BlockVec3;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -46,8 +47,11 @@ public class Blueprint implements Serializable {
         }
     }
 
-    public static Blueprint from(World world, BlockVec3 min, BlockVec3 max) {
+    public static Blueprint from(World world, CuboidRegion region) {
         ArrayList<BlueprintBlock> blocks = new ArrayList<>();
+
+        BlockVec3 min = region.getMin();
+        BlockVec3 max = region.getMax();
 
         for (int x = min.getX(); x <= max.getX(); x++) {
             for (int y = min.getY(); y <= max.getY(); y++) {
@@ -59,5 +63,29 @@ public class Blueprint implements Serializable {
         }
 
         return new Blueprint(blocks,new BlockVec3(0,0,0));
+    }
+
+    public void rotateY(int degrees) {
+        int rotation = Math.round(degrees / 90f) % 4;
+        if (rotation < 0) {
+            rotation += 4;
+        }
+        for (BlueprintBlock block : blocks) {
+            BlockVec3 pos = block.getPos();
+            int x = pos.getX();
+            int y = pos.getY();
+            int z = pos.getZ();
+
+            switch (rotation) {
+                case 1 -> block.setPos(new BlockVec3(x, y, -z));
+                case 2 -> block.setPos(new BlockVec3(-x, y, -z));
+                case 3 -> block.setPos(new BlockVec3(-x, y, z));
+            }
+        }
+        switch (rotation) {
+            case 1 -> origin = new BlockVec3(origin.getX(), origin.getY(), -origin.getZ());
+            case 2 -> origin = new BlockVec3(-origin.getX(), origin.getY(), -origin.getZ());
+            case 3 -> origin = new BlockVec3(-origin.getX(), origin.getY(), origin.getZ());
+        }
     }
 }
