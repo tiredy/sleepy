@@ -1,3 +1,3 @@
-![](https://jitpack.io/v/tiredy/sleepy.svg)](https://jitpack.io/#tiredy/sleepy)
+(https://jitpack.io/v/tiredy/sleepy.svg)
 # sleepy
 For mah plugins
