@@ -18,6 +18,7 @@ public class Blueprint implements Serializable {
     protected Blueprint(List<BlueprintBlock> blocks, BlockVec3 origin, BlockVec3 sizeVector) {
         this.blocks = blocks;
         this.originVector = origin;
+        this.sizeVector = sizeVector;
     }
 
     public void to(BlockVec3 location, World world) {
@@ -54,11 +55,16 @@ public class Blueprint implements Serializable {
         return new Blueprint(blocks, new BlockVec3(0,0,0), size);
     }
 
-    public void rotateY(int degrees) {
+    public Blueprint rotateY(int degrees) {
         int rotation = Math.round(degrees / 90f) % 4;
         if (rotation < 0) {
             rotation += 4;
         }
+
+        List<BlueprintBlock> rotatedBlocks = new ArrayList<>();
+        BlockVec3 rotatedOriginVector = originVector.copy();
+        BlockVec3 rotatedSizeVector = sizeVector.copy();
+
         for (BlueprintBlock block : blocks) {
             BlockVec3 pos = block.getPos();
             int x = pos.getX();
@@ -66,16 +72,28 @@ public class Blueprint implements Serializable {
             int z = pos.getZ();
 
             switch (rotation) {
-                case 1 -> block.setPos(new BlockVec3(x, y, -z));
-                case 2 -> block.setPos(new BlockVec3(-x, y, -z));
-                case 3 -> block.setPos(new BlockVec3(-x, y, z));
+                case 1 -> rotatedBlocks.add(new BlueprintBlock(block.getMaterial(), block.getData(), new BlockVec3(x, y, -z)));
+                case 2 -> rotatedBlocks.add(new BlueprintBlock(block.getMaterial(), block.getData(), new BlockVec3(-x, y, -z)));
+                case 3 -> rotatedBlocks.add(new BlueprintBlock(block.getMaterial(), block.getData(), new BlockVec3(-x, y, z)));
+                default -> rotatedBlocks.add(block); // No rotation needed
             }
         }
         switch (rotation) {
-            case 1 -> originVector = new BlockVec3(originVector.getX(), originVector.getY(), -originVector.getZ());
-            case 2 -> originVector = new BlockVec3(-originVector.getX(), originVector.getY(), -originVector.getZ());
-            case 3 -> originVector = new BlockVec3(-originVector.getX(), originVector.getY(), originVector.getZ());
+            case 1 -> {
+                rotatedOriginVector = new BlockVec3(originVector.getX(), originVector.getY(), -originVector.getZ());
+                rotatedSizeVector = new BlockVec3(sizeVector.getX(), sizeVector.getY(), -sizeVector.getZ());
+            }
+            case 2 -> {
+                rotatedOriginVector = new BlockVec3(-originVector.getX(), originVector.getY(), -originVector.getZ());
+                rotatedSizeVector = new BlockVec3(-sizeVector.getX(), sizeVector.getY(), -sizeVector.getZ());
+            }
+            case 3 -> {
+                rotatedOriginVector = new BlockVec3(-originVector.getX(), originVector.getY(), originVector.getZ());
+                rotatedSizeVector = new BlockVec3(-sizeVector.getX(), sizeVector.getY(), sizeVector.getZ());
+            }
         }
+
+        return new Blueprint(rotatedBlocks, rotatedOriginVector, rotatedSizeVector);
     }
 
     public List<BlueprintBlock> getBlocks() {

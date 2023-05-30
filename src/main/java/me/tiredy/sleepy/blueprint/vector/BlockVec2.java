@@ -43,4 +43,8 @@ public class BlockVec2 {
     public BlockVec2 add(BlockVec2 v) {
         return new BlockVec2(x + v.x, z + v.z);
     }
+
+    public BlockVec2 copy() {
+        return new BlockVec2(x, z);
+    }
 }

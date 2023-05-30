@@ -54,4 +54,8 @@ public class BlockVec3 {
         return new BlockVec3(x + v.x, y + v.y, z + v.z);
     }
 
+    public BlockVec3 copy() {
+        return new BlockVec3(x, y, z);
+    }
+
 }
