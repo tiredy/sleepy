@@ -8,7 +8,7 @@ import org.bukkit.block.data.BlockData;
 public class BlueprintBlock {
     private Material material;
     private BlockData data;
-    private BlockVec3 relativePos;
+    private final BlockVec3 relativePos;
 
     public BlueprintBlock(Material material, BlockData data, BlockVec3 relativePos) {
         this.material = material;
@@ -28,11 +28,6 @@ public class BlueprintBlock {
         return data;
     }
 
-    @Override
-    public String toString() {
-        return "BlueprintBlock{" + "material=" + material + ", data=" + data + ", relativePos=" + relativePos + '}';
-    }
-
     public void setData(BlockData data) {
         this.data = data;
     }
@@ -41,7 +36,8 @@ public class BlueprintBlock {
         return relativePos;
     }
 
-    public void setPos(BlockVec3 relativePos) {
-        this.relativePos = relativePos;
+    // TODO: Most set methods should be like this. (probably define a new set method template in intellij for this lol)
+    public BlueprintBlock setPos(BlockVec3 relativePos) {
+        return new BlueprintBlock(material, data, relativePos);
     }
 }

@@ -1,6 +1,7 @@
 package me.tiredy.sleepy.blueprint.vector;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("unused")
@@ -58,4 +59,7 @@ public class BlockVec3 {
         return new BlockVec3(x, y, z);
     }
 
+    public Location toLocation(World world) {
+        return new Location(world, x, y, z);
+    }
 }

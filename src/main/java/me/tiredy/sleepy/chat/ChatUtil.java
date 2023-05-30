@@ -27,4 +27,9 @@ public class ChatUtil {
         Audience audience = audiences.player(p);
         audience.sendMessage(component(message));
     }
+
+    public void sendAll(String message) {
+        Audience audience = audiences.all();
+        audience.sendMessage(component(message));
+    }
 }
