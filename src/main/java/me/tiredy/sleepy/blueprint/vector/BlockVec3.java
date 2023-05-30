@@ -1,5 +1,8 @@
 package me.tiredy.sleepy.blueprint.vector;
 
+import org.bukkit.Location;
+import org.bukkit.util.Vector;
+
 @SuppressWarnings("unused")
 public class BlockVec3 {
     public int getX() {
@@ -33,4 +36,22 @@ public class BlockVec3 {
         this.y = y;
         this.z = z;
     }
+
+    public static BlockVec3 from(Location location) {
+        return new BlockVec3((int) location.getX(), (int) location.getY(), (int) location.getZ());
+    }
+
+    public static BlockVec3 from(Vector vector) {
+        return new BlockVec3((int) vector.getX(), (int) vector.getY(), (int) vector.getZ());
+    }
+
+
+    public BlockVec3 subtract(BlockVec3 v) {
+        return new BlockVec3(x - v.x, y - v.y, z - v.z);
+    }
+
+    public BlockVec3 add(BlockVec3 v) {
+        return new BlockVec3(x + v.x, y + v.y, z + v.z);
+    }
+
 }

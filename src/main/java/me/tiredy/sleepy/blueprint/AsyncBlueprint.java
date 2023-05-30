@@ -13,11 +13,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unused")
 public class AsyncBlueprint extends Blueprint {
-    protected AsyncBlueprint(CopyOnWriteArrayList<BlueprintBlock> blocks, BlockVec3 origin) {
-        super(blocks, origin);
+    protected AsyncBlueprint(CopyOnWriteArrayList<BlueprintBlock> blocks, BlockVec3 originVector, BlockVec3 sizeVector) {
+        super(blocks, originVector, sizeVector);
     }
 
-    public void to(SleepyAPI instance, BlockVec3 location, World world, VoidCallback callback) {
+    /**
+     * @deprecated Unsafe, changing chunks or blocks asynchronously is <span style="color:red;font-weight:800;">NOT</span> recommended
+     */
+    @Deprecated
+    public void asyncTo(SleepyAPI instance, BlockVec3 location, World world, VoidCallback callback) {
         Bukkit.getScheduler().runTaskAsynchronously(instance.getPlugin(),() -> {
             for (BlueprintBlock block : blocks) {
                 Block targetBlock = world.getBlockAt(
@@ -39,6 +43,9 @@ public class AsyncBlueprint extends Blueprint {
 
             BlockVec3 min = region.getMin();
             BlockVec3 max = region.getMax();
+
+            BlockVec3 size = max.subtract(min);
+
             World world = region.getWorld();
 
             for (int x = min.getX(); x <= max.getX(); x++) {
@@ -50,7 +57,7 @@ public class AsyncBlueprint extends Blueprint {
                 }
             }
 
-            callback.onSuccess(new AsyncBlueprint(blocks,new BlockVec3(0,0,0)));
+            callback.onSuccess(new AsyncBlueprint(blocks, new BlockVec3(0,0,0), size));
         });
     }
 }
