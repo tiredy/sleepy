@@ -47,7 +47,8 @@ public class Blueprint implements Serializable {
             for (int y = min.getY(); y <= max.getY(); y++) {
                 for (int z = min.getZ(); z <= max.getZ(); z++) {
                     Block block = world.getBlockAt(x, y, z);
-                    blocks.add(new BlueprintBlock(block.getType(), block.getBlockData(), new BlockVec3(x,y,z)));
+                    BlockVec3 relativePos = new BlockVec3(min.getX() - x, min.getY() - y, min.getZ());
+                    blocks.add(new BlueprintBlock(block.getType(), block.getBlockData(), relativePos));
                 }
             }
         }
