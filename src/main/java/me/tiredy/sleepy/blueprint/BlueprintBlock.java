@@ -6,8 +6,8 @@ import org.bukkit.block.data.BlockData;
 
 @SuppressWarnings("unused")
 public class BlueprintBlock {
-    private Material material;
-    private BlockData data;
+    private final Material material;
+    private final BlockData data;
     private final BlockVec3 relativePos;
 
     public BlueprintBlock(Material material, BlockData data, BlockVec3 relativePos) {
@@ -20,16 +20,16 @@ public class BlueprintBlock {
         return material;
     }
 
-    public void setMaterial(Material material) {
-        this.material = material;
+    public BlueprintBlock setMaterial(Material material) {
+        return new BlueprintBlock(material, data, relativePos);
     }
 
     public BlockData getData() {
         return data;
     }
 
-    public void setData(BlockData data) {
-        this.data = data;
+    public BlueprintBlock setData(BlockData data) {
+        return new BlueprintBlock(material, data, relativePos);
     }
 
     public BlockVec3 getPos() {
