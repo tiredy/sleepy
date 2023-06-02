@@ -68,20 +68,22 @@ public class Blueprint implements Serializable {
         BlockVec3 rotatedOriginVector = rotateVectorY(originVector, quarterTurns);
         BlockVec3 rotatedSizeVector = rotateVectorY(sizeVector, quarterTurns);
 
+        // Calculate the translation vector based on the rotation
+        BlockVec3 translationVector = new BlockVec3(0, 0, 0);
+        for (int i = 0; i < quarterTurns; i++) {
+            int temp = translationVector.getX();
+            translationVector.setX(-translationVector.getZ());
+            translationVector.setZ(temp);
+        }
+
         for (BlueprintBlock block : blocks) {
             BlockVec3 pos = block.getPos();
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
 
-            int newX = x;
-            int newZ = z;
-
-            for (int i = 0; i < quarterTurns; i++) {
-                int temp = newX;
-                newX = -newZ;
-                newZ = temp;
-            }
+            int newX = x + translationVector.getX();
+            int newZ = z + translationVector.getZ();
 
             rotatedBlocks.add(block.setPos(new BlockVec3(newX, y, newZ)));
         }
