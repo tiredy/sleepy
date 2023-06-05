@@ -56,48 +56,8 @@ public class Blueprint implements Serializable {
         return new Blueprint(blocks, new BlockVec3(0, 0, 0), size);
     }
 
-    public Blueprint rotateY(int degrees) {
-        int quarterTurns = (degrees / 90) & 3;
-
-        List<BlueprintBlock> rotatedBlocks = new ArrayList<>();
-
-        for (BlueprintBlock block : blocks) {
-            BlockVec3 pos = block.getPos();
-            int x = pos.getX();
-            int z = pos.getZ();
-            BlueprintBlock newBlock = switch (quarterTurns) {
-                case 1 -> block.setPos(new BlockVec3(z, pos.getY(), -x));
-                case 2 -> block.setPos(new BlockVec3(-x, pos.getY(), -z));
-                case 3 -> block.setPos(new BlockVec3(-z, pos.getY(), x));
-                default -> block;
-            };
-            rotatedBlocks.add(newBlock);
-        }
-
-        BlockVec3 newOriginVector, newSizeVector;
-        switch (quarterTurns) {
-            case 1 -> {
-                newOriginVector = originVector.multiply(new BlockVec3(1, 1, -1));
-                newSizeVector = sizeVector.multiply(new BlockVec3(1, 1, -1));
-            }
-            case 2 -> {
-                newOriginVector = originVector.multiply(new BlockVec3(-1, 1, -1));
-                newSizeVector = sizeVector.multiply(new BlockVec3(-1, 1, -1));
-            }
-            case 3 -> {
-                newOriginVector = originVector.multiply(new BlockVec3(-1, 1, 1));
-                newSizeVector = sizeVector.multiply(new BlockVec3(-1, 1, 1));
-            }
-            default -> {
-                newOriginVector = originVector;
-                newSizeVector = sizeVector;
-            }
-        }
-
-        return new Blueprint(rotatedBlocks, newOriginVector, newSizeVector);
-    }
-
-    public Blueprint rotateVoxels(BlockVec3 rotationVector, int angleX, int angleY, int angleZ) {
+    @SuppressWarnings("SuspiciousNameCombination")
+    public Blueprint rotate(BlockVec3 rotationVector, int angleX, int angleY, int angleZ) {
         int rotationsX = (angleX / 90) % 4;
         int rotationsY = (angleY / 90) % 4;
         int rotationsZ = (angleZ / 90) % 4;

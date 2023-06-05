@@ -49,7 +49,6 @@ public class CuboidRegion {
     }
 
     public boolean isPlayerInRegion(Player player) {
-        // Assuming BlockVec3 has getX(), getY(), and getZ() methods to retrieve the coordinates.
         double playerX = player.getLocation().getX();
         double playerY = player.getLocation().getY();
         double playerZ = player.getLocation().getZ();
