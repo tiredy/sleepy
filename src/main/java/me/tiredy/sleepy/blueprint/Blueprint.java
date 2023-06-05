@@ -4,6 +4,7 @@ import me.tiredy.sleepy.blueprint.region.CuboidRegion;
 import me.tiredy.sleepy.blueprint.vector.BlockVec3;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.structure.StructureRotation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,57 +54,99 @@ public class Blueprint implements Serializable {
             }
         }
 
-        return new Blueprint(blocks, new BlockVec3(0,0,0), size);
+        return new Blueprint(blocks, new BlockVec3(0, 0, 0), size);
     }
 
     public Blueprint rotateY(int degrees) {
-        int rotation = Math.floorMod(degrees, 360);
-        if (rotation < 0) {
-            rotation += 360;
-        }
+        int quarterTurns = (degrees / 90) & 3;
 
         List<BlueprintBlock> rotatedBlocks = new ArrayList<>();
-        int quarterTurns = rotation / 90;
-
-        BlockVec3 rotatedOriginVector = rotateVectorY(originVector, quarterTurns);
-        BlockVec3 rotatedSizeVector = rotateVectorY(sizeVector, quarterTurns);
-
-        // Calculate the translation vector based on the rotation
-        BlockVec3 translationVector = new BlockVec3(0, 0, 0);
-        for (int i = 0; i < quarterTurns; i++) {
-            int temp = translationVector.getX();
-            translationVector.setX(-translationVector.getZ());
-            translationVector.setZ(temp);
-        }
 
         for (BlueprintBlock block : blocks) {
             BlockVec3 pos = block.getPos();
             int x = pos.getX();
-            int y = pos.getY();
             int z = pos.getZ();
-
-            int newX = x + translationVector.getX();
-            int newZ = z + translationVector.getZ();
-
-            rotatedBlocks.add(block.setPos(new BlockVec3(newX, y, newZ)));
+            BlueprintBlock newBlock = switch (quarterTurns) {
+                case 1 -> block.setPos(new BlockVec3(z, pos.getY(), -x));
+                case 2 -> block.setPos(new BlockVec3(-x, pos.getY(), -z));
+                case 3 -> block.setPos(new BlockVec3(-z, pos.getY(), x));
+                default -> block;
+            };
+            rotatedBlocks.add(newBlock);
         }
 
-        return new Blueprint(rotatedBlocks, rotatedOriginVector, rotatedSizeVector);
-    }
-
-    private BlockVec3 rotateVectorY(BlockVec3 vector, int quarterTurns) {
-        int x = vector.getX();
-        int y = vector.getY();
-        int z = vector.getZ();
-
-        for (int i = 0; i < quarterTurns; i++) {
-            int temp = x;
-            x = -z;
-            z = temp;
+        BlockVec3 newOriginVector, newSizeVector;
+        switch (quarterTurns) {
+            case 1 -> {
+                newOriginVector = originVector.multiply(new BlockVec3(1, 1, -1));
+                newSizeVector = sizeVector.multiply(new BlockVec3(1, 1, -1));
+            }
+            case 2 -> {
+                newOriginVector = originVector.multiply(new BlockVec3(-1, 1, -1));
+                newSizeVector = sizeVector.multiply(new BlockVec3(-1, 1, -1));
+            }
+            case 3 -> {
+                newOriginVector = originVector.multiply(new BlockVec3(-1, 1, 1));
+                newSizeVector = sizeVector.multiply(new BlockVec3(-1, 1, 1));
+            }
+            default -> {
+                newOriginVector = originVector;
+                newSizeVector = sizeVector;
+            }
         }
 
-        return new BlockVec3(x, y, z);
+        return new Blueprint(rotatedBlocks, newOriginVector, newSizeVector);
     }
+
+    public Blueprint rotate(BlockVec3 rotationVector, int angleX, int angleY, int angleZ) {
+        double radX = Math.toRadians(angleX % 360);
+        double radY = Math.toRadians(angleY % 360);
+        double radZ = Math.toRadians(angleZ % 360);
+
+        double cosX = Math.cos(radX);
+        double sinX = Math.sin(radX);
+        double cosY = Math.cos(radY);
+        double sinY = Math.sin(radY);
+        double cosZ = Math.cos(radZ);
+        double sinZ = Math.sin(radZ);
+
+        // Copy the orignal blocks for the new Blueprint
+        ArrayList<BlueprintBlock> newBlocks = new ArrayList<>(blocks);
+        BlockVec3 newOrigin = originVector.copy();
+        BlockVec3 newSize = sizeVector.copy();
+
+        for (BlueprintBlock block : newBlocks) {
+            // Translate the block coordinate to the rotation point
+            int translatedX = block.getPos().getX() - rotationVector.getX();
+            int translatedY = block.getPos().getY() - rotationVector.getY();
+            int translatedZ = block.getPos().getZ() - rotationVector.getZ();
+
+            // Apply rotation matrix
+            int rotatedX = (int) (cosY * (sinZ * translatedY + cosZ * translatedX) - sinY * translatedZ);
+
+            final var v = cosY * translatedZ + sinY * (sinZ * translatedY + cosZ * translatedX);
+            int rotatedY = (int) (sinX * v + cosX * (cosZ * translatedY - sinZ * translatedX));
+            int rotatedZ = (int) (cosX * v - sinX * (cosZ * translatedY - sinZ * translatedX));
+
+            // Translate the rotated coordinate back
+            block.getPos().setX(rotatedX + rotationVector.getX());
+            block.getPos().setY(rotatedY + rotationVector.getY());
+            block.getPos().setZ(rotatedZ + rotationVector.getZ());
+
+            StructureRotation rotation = switch (angleY % 4) {
+                case 1, -3 -> StructureRotation.CLOCKWISE_90;
+                case 2, -2 -> StructureRotation.CLOCKWISE_180;
+                case 3, -1 -> StructureRotation.COUNTERCLOCKWISE_90;
+                default -> StructureRotation.NONE; // Default case when the angle does not match any of the above cases
+            };
+
+            block.getData().rotate(rotation);
+        }
+
+        return new Blueprint(newBlocks, newOrigin, newSize);
+    }
+
+
 
     public List<BlueprintBlock> getBlocks() {
         return blocks;
