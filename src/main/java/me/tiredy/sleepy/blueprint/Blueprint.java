@@ -133,14 +133,15 @@ public class Blueprint implements Serializable {
             block.getPos().setY(rotatedY + rotationVector.getY());
             block.getPos().setZ(rotatedZ + rotationVector.getZ());
 
-            StructureRotation rotation = switch (angleY % 4) {
-                case 1, -3 -> StructureRotation.CLOCKWISE_90;
-                case 2, -2 -> StructureRotation.CLOCKWISE_180;
-                case 3, -1 -> StructureRotation.COUNTERCLOCKWISE_90;
-                default -> StructureRotation.NONE; // Default case when the angle does not match any of the above cases
-            };
-
-            block.getData().rotate(rotation);
+            // bukkit decided to be special and rotate is apparently not a method, fuck this lol
+//            StructureRotation rotation = switch (angleY % 4) {
+//                case 1, -3 -> StructureRotation.CLOCKWISE_90;
+//                case 2, -2 -> StructureRotation.CLOCKWISE_180;
+//                case 3, -1 -> StructureRotation.COUNTERCLOCKWISE_90;
+//                default -> StructureRotation.NONE; // Default case when the angle does not match any of the above cases
+//            };
+//
+//            block.getData().rotate(rotation);
         }
 
         return new Blueprint(newBlocks, newOrigin, newSize);
