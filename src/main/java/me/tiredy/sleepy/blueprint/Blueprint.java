@@ -4,7 +4,6 @@ import me.tiredy.sleepy.blueprint.region.CuboidRegion;
 import me.tiredy.sleepy.blueprint.vector.BlockVec3;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.structure.StructureRotation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -98,56 +97,45 @@ public class Blueprint implements Serializable {
         return new Blueprint(rotatedBlocks, newOriginVector, newSizeVector);
     }
 
-    public Blueprint rotate(BlockVec3 rotationVector, int angleX, int angleY, int angleZ) {
-        double radX = Math.toRadians(angleX % 360);
-        double radY = Math.toRadians(angleY % 360);
-        double radZ = Math.toRadians(angleZ % 360);
+    public Blueprint rotateVoxels(BlockVec3 rotationVector, int angleX, int angleY, int angleZ) {
+        int rotationsX = (angleX / 90) % 4;
+        int rotationsY = (angleY / 90) % 4;
+        int rotationsZ = (angleZ / 90) % 4;
 
-        double cosX = Math.cos(radX);
-        double sinX = Math.sin(radX);
-        double cosY = Math.cos(radY);
-        double sinY = Math.sin(radY);
-        double cosZ = Math.cos(radZ);
-        double sinZ = Math.sin(radZ);
-
-        // Copy the orignal blocks for the new Blueprint
         ArrayList<BlueprintBlock> newBlocks = new ArrayList<>(blocks);
         BlockVec3 newOrigin = originVector.copy();
         BlockVec3 newSize = sizeVector.copy();
 
         for (BlueprintBlock block : newBlocks) {
-            // Translate the block coordinate to the rotation point
-            int translatedX = block.getPos().getX() - rotationVector.getX();
-            int translatedY = block.getPos().getY() - rotationVector.getY();
-            int translatedZ = block.getPos().getZ() - rotationVector.getZ();
+            int x = block.getPos().getX() - rotationVector.getX();
+            int y = block.getPos().getY() - rotationVector.getY();
+            int z = block.getPos().getZ() - rotationVector.getZ();
 
-            // Apply rotation matrix
-            int rotatedX = (int) (cosY * (sinZ * translatedY + cosZ * translatedX) - sinY * translatedZ);
+            for (int i = 0; i < rotationsX; i++) {
+                int tempY = y;
+                y = -z;
+                z = tempY;
+            }
 
-            final var v = cosY * translatedZ + sinY * (sinZ * translatedY + cosZ * translatedX);
-            int rotatedY = (int) (sinX * v + cosX * (cosZ * translatedY - sinZ * translatedX));
-            int rotatedZ = (int) (cosX * v - sinX * (cosZ * translatedY - sinZ * translatedX));
+            for (int i = 0; i < rotationsY; i++) {
+                int tempX = x;
+                x = z;
+                z = -tempX;
+            }
 
-            // Translate the rotated coordinate back
-            block.getPos().setX(rotatedX + rotationVector.getX());
-            block.getPos().setY(rotatedY + rotationVector.getY());
-            block.getPos().setZ(rotatedZ + rotationVector.getZ());
+            for (int i = 0; i < rotationsZ; i++) {
+                int tempX = x;
+                x = -y;
+                y = tempX;
+            }
 
-            // bukkit decided to be special and rotate is apparently not a method, fuck this lol
-//            StructureRotation rotation = switch (angleY % 4) {
-//                case 1, -3 -> StructureRotation.CLOCKWISE_90;
-//                case 2, -2 -> StructureRotation.CLOCKWISE_180;
-//                case 3, -1 -> StructureRotation.COUNTERCLOCKWISE_90;
-//                default -> StructureRotation.NONE; // Default case when the angle does not match any of the above cases
-//            };
-//
-//            block.getData().rotate(rotation);
+            block.getPos().setX(x + rotationVector.getX());
+            block.getPos().setY(y + rotationVector.getY());
+            block.getPos().setZ(z + rotationVector.getZ());
         }
 
         return new Blueprint(newBlocks, newOrigin, newSize);
     }
-
-
 
     public List<BlueprintBlock> getBlocks() {
         return blocks;
