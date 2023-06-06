@@ -43,12 +43,25 @@ public class Blueprint implements Serializable {
 
         World world = region.getWorld();
 
-        for (int x = min.getX(); x <= max.getX(); x++) {
-            for (int y = min.getY(); y <= max.getY(); y++) {
-                for (int z = min.getZ(); z <= max.getZ(); z++) {
-                    Block block = world.getBlockAt(x, y, z);
-                    BlockVec3 relativePos = new BlockVec3(x, y, z).subtract(min);
-                    blocks.add(new BlueprintBlock(block.getType(), block.getBlockData(), relativePos));
+        int minChunkX = min.getX() >> 4;
+        int minChunkZ = min.getZ() >> 4;
+        int maxChunkX = max.getX() >> 4;
+        int maxChunkZ = max.getZ() >> 4;
+        // TODO: Check if chunk loaded, warn if not then force sync-load
+        // TODO: async-load chunk in asyncblueprint
+
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                world.loadChunk(chunkX, chunkZ, true);
+
+                for (int x = chunkX << 4; x < (chunkX << 4) + 16; x++) {
+                    for (int y = min.getY(); y <= max.getY(); y++) {
+                        for (int z = chunkZ << 4; z < (chunkZ << 4) + 16; z++) {
+                            Block block = world.getBlockAt(x, y, z);
+                            BlockVec3 relativePos = new BlockVec3(x, y, z).subtract(min);
+                            blocks.add(new BlueprintBlock(block.getType(), block.getBlockData(), relativePos));
+                        }
+                    }
                 }
             }
         }
